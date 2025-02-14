@@ -79,15 +79,6 @@ interface LinkwardenTag {
  * @returns PDFInformation object with the name, nameWithoutExtension and filePath.
  */
 export async function fetchAndStorePdfFromLink(link) {
-    // Get the PDF from the linkwarden archive.
-    const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/archives/${link.id}?format=2`, LINKWARDEN_GET_REQ_OPTIONS)
-
-    if (!response.ok) {
-        logseq.UI.showMsg(`Failed to fetch PDF for ${link.name}.`, "warning")
-        return null
-    }
-
-    const pdfData = await response.blob();
     let name = link.name
     name = sanitizeNameForPath(name)
 
@@ -96,20 +87,39 @@ export async function fetchAndStorePdfFromLink(link) {
         name += '.pdf'
     }
 
+    const collectionName = sanitizeNameForPath(link.collection.name)
     const nameWithoutPdf = name.replace('.pdf', '')
+    const filePath       = `../assets/storages/${logseq.baseInfo.id}/${collectionName}/${name}`
 
-    const fileReader = new FileReader();
-    fileReader.onload = () => STORAGE.setItem(name, fileReader.result as string)
-    fileReader.readAsArrayBuffer(pdfData)
+    let storageItem: string | undefined = undefined
 
-    const filePath = `../assets/storages/${logseq.baseInfo.id}/${name}`
+    try {
+        storageItem = await STORAGE.getItem(`${collectionName}/${name}`)
+    } catch (error) { }
+
+    // If the item is not present in the storage, download it again.
+    if (storageItem === undefined || storageItem.length === 0) {
+        // Get the PDF from the linkwarden archive.
+        const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/archives/${link.id}?format=2`, LINKWARDEN_GET_REQ_OPTIONS)
+
+        if (!response.ok) {
+            logseq.UI.showMsg(`Failed to fetch PDF for ${link.name}.`, "warning")
+            return null
+        }
+
+        const pdfData = await response.blob();
+
+        const fileReader = new FileReader();
+        fileReader.onload = () => STORAGE.setItem(`${collectionName}/${name}`, fileReader.result as string)
+        fileReader.readAsArrayBuffer(pdfData)
+    }
 
     const pdfInformation: PDFInformation = {
         name: name,
         nameWithoutExtension: nameWithoutPdf,
         filePath: filePath,
         markdownLink: `![${nameWithoutPdf}](${filePath})`,
-        collection: link.collection.name,
+        collection: collectionName,
         tags: link.tags,
         linkwardenId: link.id
     }
