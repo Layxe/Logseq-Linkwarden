@@ -2,3 +2,6 @@ lib/api-key.ts
 .parcel-cache
 dist
 node_modules
+.env
+pgdata/
+data/

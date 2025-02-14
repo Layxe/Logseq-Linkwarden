@@ -1,7 +1,7 @@
 import '@logseq/libs';
-import { getCollectionByName, getAllLinksInCollection, fetchAndStorePdfFromLink, PDFInformation } from './lib/collections';
-import { BlockEntity } from '@logseq/libs/dist/LSPlugin.user';
 import { updateCurrentPage } from './lib/page-updater';
+import { global, settingsConfig } from './lib/settings';
+import { updateApiSettings } from './lib/linkwarden-api';
 
 const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
 
@@ -10,36 +10,53 @@ const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
-function main () {
-    logseq.Editor.registerSlashCommand(
-        "Get Linkwarden Link for Collection",
-        async () => {
-            await delay(500)
+export async function triggerLinkwardenUpdateAction() {
+    await delay(500)
 
-            const currentPage = await logseq.Editor.getCurrentPage()
+    console.log('Update!')
 
-            if (currentPage === null) {
-                logseq.UI.showMsg("Error no current page.")
-                return
-            }
+    const currentPage = await logseq.Editor.getCurrentPage()
 
-            updateCurrentPage()
+    if (currentPage === null) {
+        logseq.UI.showMsg("Error no current page.")
+        return
+    }
 
-            // Search for blocks with the tag "#collection"
-            const blocks = await logseq.Editor.getCurrentPageBlocksTree()
-            const blocksToScrape: BlockEntity[] = []
+    updateCurrentPage()
 
-            blocks.forEach(async (block) => {
-                const content = block.content
-                if (content.includes(LINKWARDEN_COLLECTION_TAG)) {
-                    blocksToScrape.push(block)
-                }
-            })
+    await delay(500)
 
-            for (const block of blocksToScrape) {
-            }
-        }
-    )
+    await logseq.Editor.exitEditingMode(false)
 }
 
-logseq.ready(main).catch(console.error)
+function loadSettings() {
+    logseq.useSettingsSchema(settingsConfig)
+
+    updateApiSettings(logseq.settings)
+
+    logseq.onSettingsChanged(() => {
+        updateApiSettings(logseq.settings)
+    })
+}
+
+function main () {
+    loadSettings()
+
+    logseq.App.registerUIItem("toolbar", {
+        key: "LinkwardenUpdate",
+        template: `
+        <a class="button" data-on-click="triggerLinkwardenUpdateAction">
+            <i class="ti ti-link"></i>
+        </a>`,
+    })
+}
+
+function createModel() {
+    return {
+        triggerLinkwardenUpdateAction () {
+            triggerLinkwardenUpdateAction()
+        }
+    }
+}
+
+logseq.ready(createModel()).then(main).catch(console.error)

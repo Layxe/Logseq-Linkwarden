@@ -4,7 +4,8 @@
   "description": "Linkwarden plugin for Logseq",
   "logseq": {
     "main": "dist/index.html",
-    "id": "_706smmyun"
+    "id": "_706smmyun",
+    "name": "Logseq Linkwarden"
   },
   "scripts": {
     "build": "parcel build --public-url . --no-source-maps index.html"

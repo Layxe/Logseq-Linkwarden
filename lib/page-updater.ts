@@ -10,7 +10,6 @@ export async function updateCurrentPage() {
         await updateCollectionBlock(block)
     }
 
-    await logseq.Editor.exitEditingMode(false)
 }
 
 function getCollectionNameFromBlockContent(content: string) {
@@ -107,7 +106,6 @@ async function updateCollectionBlock(block) {
     const pagePrefix = currentPage.originalName + "/"
 
     if (collectionName.length === 0) {
-        logseq.UI.showMsg("No collection name found.")
         return
     }
 
@@ -148,7 +146,7 @@ async function updateCollectionBlock(block) {
         }
 
         // Update the matching page to the link
-        const linkPage = await logseq.Editor.getPage(pdfInformation.nameWithoutExtension)
+        const linkPage = await logseq.Editor.getPage(pagePrefix + pdfInformation.nameWithoutExtension)
 
         if (linkPage === null) {
             logseq.UI.showMsg(`Link page ${pdfInformation.nameWithoutExtension} not found.`)

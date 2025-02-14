@@ -2,20 +2,43 @@ import { LINKWARDEN_BASE_URL, LINKWARDEN_GET_REQ_OPTIONS } from "./linkwarden-ap
 
 const STORAGE = logseq.Assets.makeSandboxStorage()
 
+function sanitizeNameForPath(name: string) {
+    name = name.replaceAll('/', '-')
+    name = name.replaceAll('?','')
+    name = name.replaceAll(':','')
+    name = name.replaceAll('*','')
+    name = name.replaceAll('"','')
+    name = name.replaceAll('<','')
+    name = name.replaceAll('>','')
+    name = name.replaceAll('|','')
+    return name
+}
+
 async function getAllCollections() {
-    const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/collections`, LINKWARDEN_GET_REQ_OPTIONS);
-    const data = await response.json();
-    return data.response;
+    try {
+        const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/collections`, LINKWARDEN_GET_REQ_OPTIONS);
+        const data = await response.json();
+        return data.response;
+    } catch (error) {
+        logseq.UI.showMsg("Failed to fetch collections from Linkwarden.");
+        return []
+    }
 }
 
 export async function getCollectionByName(name: string) {
     const collections = await getAllCollections();
+
+    if (collections.length === 0) {
+        return null;
+    }
 
     for (const collection of collections) {
         if (collection.name === name) {
             return collection;
         }
     }
+
+    logseq.UI.showMsg(`Collection ${name} not found.`);
 
     return null;
 }
@@ -54,12 +77,13 @@ export async function fetchAndStorePdfFromLink(link) {
     const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/archives/${link.id}?format=2`, LINKWARDEN_GET_REQ_OPTIONS)
 
     if (!response.ok) {
-        console.error(`Failed to fetch PDF for ${link.name}.`)
+        logseq.UI.showMsg(`Failed to fetch PDF for ${link.name}.`)
         return null
     }
 
     const pdfData = await response.blob();
     let name = link.name
+    name = sanitizeNameForPath(name)
 
     // Add .pdf extension if not present.
     if (!name.endsWith('.pdf')) {
