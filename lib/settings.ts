@@ -1,7 +1,22 @@
 import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user";
+import { updateApiSettings } from "./linkwarden-api";
+
+interface PluginSettings {
+    linkwardenHeading: null,
+    linkwardenBaseUrl: string,
+    linkwardenApiKey: string
+    linkwardenCustomProperties: string
+}
 
 export const global = {
-    settings: {}
+    settings: {} as PluginSettings
+}
+
+export function updatePluginSettings(settings: any) {
+    if (settings) {
+        global.settings = settings
+        updateApiSettings(settings)
+    }
 }
 
 export const settingsConfig: SettingSchemaDesc[] = [
@@ -25,5 +40,12 @@ export const settingsConfig: SettingSchemaDesc[] = [
         type: 'string',
         default: '',
         description: 'API key for your Linkwarden account.'
+    },
+    {
+        key: 'linkwardenCustomProperties',
+        title: 'Custom Properties',
+        type: 'string',
+        default: 'year:: ❓;status:: 🟦 Pending',
+        description: 'Custom properties for your Linkwarden links.'
     }
 ]

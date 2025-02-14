@@ -1,5 +1,14 @@
 import { BlockEntity } from "@logseq/libs/dist/LSPlugin.user"
 import { fetchAndStorePdfFromLink, getAllLinksInCollection, getCollectionByName, PDFInformation } from "./collections"
+import { global } from "./settings"
+
+interface LinkUpdateStructure {
+    link: any,                                      // Link object from the Linkwarden API.
+    block: BlockEntity,                             // Parent block, where all the children are stored.
+    oldChildrenBlocksMap: Map<number, BlockEntity>, // Map of old children blocks.
+    pagePrefix: string,                             // Prefix for the current page
+    collectionName: string                          // Name of the collection
+}
 
 const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
 
@@ -71,6 +80,16 @@ function deleteBlockChildren(block: BlockEntity) {
     }
 }
 
+function getTagString(tags) {
+    let tagsStr = ""
+
+    for (const tag of tags) {
+        tagsStr += ` [[${tag.name}]]`
+    }
+
+    return tagsStr
+}
+
 /**
  * This function takes new informations from linkwarden, compares them with the old state and keeps
  * Logseq changes, like the status or year.
@@ -79,44 +98,120 @@ function deleteBlockChildren(block: BlockEntity) {
  * @param pagePrefix Prefix for the page name.
  * @returns New content for the block.
  */
-async function updateOldBlockContent(pdfInformation: PDFInformation, oldChildrenBlocks: BlockEntity[], pagePrefix: string) {
-    for (const oldBlock of oldChildrenBlocks) {
-        const oldBlockContent      = oldBlock.content
-        const oldBlockContentSplit = oldBlockContent.split("\n")
+async function updateOldBlockContent(pdfInformation: PDFInformation, oldChildrenBlocksMap: Map<number, BlockEntity>, pagePrefix: string) {
+    const oldBlock = oldChildrenBlocksMap.get(pdfInformation.linkwardenId)
 
-        if (oldBlockContent.indexOf("linkwarden-id:: " + pdfInformation.linkwardenId) !== -1) {
-            oldBlockContentSplit[0] = `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]`
+    if (!oldBlock) {
+        return null
+    }
 
-            // Properties from linkwarden are: tags, collection and the name, so update these
-            for (let i = 1; i < oldBlockContentSplit.length; i++) {
-                const line = oldBlockContentSplit[i]
+    const oldBlockContent      = oldBlock.content
+    const oldBlockContentSplit = oldBlockContent.split("\n")
 
-                if (line.indexOf("collection::") !== -1) {
-                    oldBlockContentSplit[i] = `collection:: ${pdfInformation.collection}`
-                }
+    let tagsHaveBeenUpdated = false
 
-                if (line.indexOf("tags::") !== -1) {
-                    let tagsStr = ""
+    oldBlockContentSplit[0] = `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]`
 
-                    for (const tag of pdfInformation.tags) {
-                        tagsStr += ` [[${tag.name}]]`
-                    }
+    // Properties from linkwarden are: tags, collection and the name, so update these
+    for (let i = 1; i < oldBlockContentSplit.length; i++) {
+        const line = oldBlockContentSplit[i]
 
-                    oldBlockContentSplit[i] = `tags::${tagsStr}`
-                }
+        if (line.indexOf("collection::") !== -1) {
+            oldBlockContentSplit[i] = `collection:: ${pdfInformation.collection}`
+        }
 
-                if (line.indexOf("linkwarden-id::") !== -1) {
-                    oldBlockContentSplit[i] = `linkwarden-id:: ${pdfInformation.linkwardenId}`
-                }
-            }
+        if (line.indexOf("tags::") !== -1) {
+            let tagsStr = getTagString(pdfInformation.tags)
 
-            const newContent = oldBlockContentSplit.join("\n")
+            oldBlockContentSplit[i] = `tags::${tagsStr}`
+            tagsHaveBeenUpdated = true
+        }
 
-            return newContent
+        if (line.indexOf("linkwarden-id::") !== -1) {
+            oldBlockContentSplit[i] = `linkwarden-id:: ${pdfInformation.linkwardenId}`
         }
     }
 
-    return null
+    let newContent = oldBlockContentSplit.join("\n")
+
+    // Add the tags, if previously no tags were present.
+    if (!tagsHaveBeenUpdated && pdfInformation.tags.length > 0) {
+        newContent += `\ntags::${getTagString(pdfInformation.tags)}`
+    }
+
+    return newContent
+}
+
+function getLinkwardenIdToBlockMap(blockList) {
+    const blockMap = new Map<number, BlockEntity>()
+
+    // Create a map, assigning the linkwarden id to the block.
+    for (const block of blockList) {
+        let id: number = -1;
+
+        for (const line of block.content.split("\n")) {
+            if (line.indexOf("linkwarden-id::") !== -1) {
+                id = parseInt(line.split("::")[1].trim())
+                break
+            }
+        }
+
+        if (id >= 0) {
+            blockMap.set(id, block)
+        }
+    }
+
+    return blockMap
+}
+
+async function insertLinkNode(linkUpdateStructure: LinkUpdateStructure) {
+    const {link, block, oldChildrenBlocksMap, pagePrefix, collectionName} = linkUpdateStructure
+    const pdfInformation = await fetchAndStorePdfFromLink(link)
+
+    if (!pdfInformation) {
+        return
+    }
+
+    const newContent = await updateOldBlockContent(pdfInformation, oldChildrenBlocksMap, pagePrefix)
+
+    // If the content is based on a previous entry, update it.
+    if (newContent !== null) {
+        logseq.Editor.insertBlock(block.uuid, newContent)
+    } else {
+        // Create a new block entry
+        let blockContent = `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]\ncollection:: ${collectionName}\n`
+        const tagsStr = getTagString(pdfInformation.tags)
+
+        if (tagsStr.length > 0) {
+            blockContent += `tags:: ${tagsStr}\n`
+        }
+
+        blockContent += `linkwarden-id:: ${link.id}`
+
+        if (global.settings.linkwardenCustomProperties.length > 0) {
+            blockContent += `\n`
+            let separatedProperties = global.settings.linkwardenCustomProperties.replaceAll(";", "\n")
+            blockContent += `${separatedProperties}`
+        }
+
+        logseq.Editor.insertBlock(block.uuid, blockContent)
+    }
+
+    // Update the matching page to the link
+    const linkPage = await logseq.Editor.getPage(pagePrefix + pdfInformation.nameWithoutExtension)
+
+    if (linkPage === null) {
+        logseq.UI.showMsg(`Link page ${pdfInformation.nameWithoutExtension} not found.`, "warning")
+        return
+    }
+
+    const linkPageChildren = await logseq.Editor.getPageBlocksTree(linkPage.uuid)
+
+    if (linkPageChildren && linkPageChildren.length > 0) {
+        logseq.Editor.updateBlock(linkPageChildren[0].uuid, "### " + pdfInformation.markdownLink)
+    } else {
+        logseq.Editor.insertBlock(linkPage.uuid, "### " + pdfInformation.markdownLink)
+    }
 }
 
 async function updateCollectionBlock(block) {
@@ -146,50 +241,14 @@ async function updateCollectionBlock(block) {
 
     deleteBlockChildren(block)
 
+    const oldChildrenBlocksMap = getLinkwardenIdToBlockMap(oldChildrenBlocks)
+
     for (const link of links) {
-        const pdfInformation = await fetchAndStorePdfFromLink(link)
-
-        if (!pdfInformation) {
-            continue
-        }
-
-        const newContent = await updateOldBlockContent(pdfInformation, oldChildrenBlocks, pagePrefix)
-
-        // If the content is based on a previous entry, update it.
-        if (newContent !== null) {
-            logseq.Editor.insertBlock(block.uuid, newContent)
-        } else {
-            // Create a new block entry
-            let tagsStr = ""
-
-            for (const tag of pdfInformation.tags) {
-                tagsStr += ` [[${tag.name}]]`
-            }
-
-            logseq.Editor.insertBlock(block.uuid,
-                `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]\ncollection:: ${collectionName}\ntags::${tagsStr}\nlinkwarden-id:: ${link.id}\nstatus:: 🟦 Pending`)
-        }
-
-        // Update the matching page to the link
-        const linkPage = await logseq.Editor.getPage(pagePrefix + pdfInformation.nameWithoutExtension)
-
-        if (linkPage === null) {
-            logseq.UI.showMsg(`Link page ${pdfInformation.nameWithoutExtension} not found.`, "warning")
-            continue
-        }
-
-        const linkPageChildren = await logseq.Editor.getPageBlocksTree(linkPage.uuid)
-
-        if (linkPageChildren && linkPageChildren.length > 0) {
-            logseq.Editor.updateBlock(linkPageChildren[0].uuid, "### " + pdfInformation.markdownLink)
-        } else {
-            logseq.Editor.insertBlock(linkPage.uuid, "### " + pdfInformation.markdownLink)
-        }
+        insertLinkNode({link, block, oldChildrenBlocksMap, pagePrefix, collectionName})
     }
 }
 
 async function getCollectionBlocks() {
-
     // Search for blocks with the tag "#collection"
     const blocks = await logseq.Editor.getCurrentPageBlocksTree()
     const blocksToScrape: BlockEntity[] = []

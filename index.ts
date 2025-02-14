@@ -1,6 +1,6 @@
 import '@logseq/libs';
 import { updateCurrentPage } from './lib/page-updater';
-import { global, settingsConfig } from './lib/settings';
+import { global, settingsConfig, updatePluginSettings } from './lib/settings';
 import { updateApiSettings } from './lib/linkwarden-api';
 
 const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
@@ -32,10 +32,10 @@ export async function triggerLinkwardenUpdateAction() {
 function loadSettings() {
     logseq.useSettingsSchema(settingsConfig)
 
-    updateApiSettings(logseq.settings)
+    updatePluginSettings(logseq.settings)
 
     logseq.onSettingsChanged(() => {
-        updateApiSettings(logseq.settings)
+        updatePluginSettings(logseq.settings)
     })
 }
 
