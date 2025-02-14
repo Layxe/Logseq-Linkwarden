@@ -1,10 +1,10 @@
 {
-  "name": "Linkwarden Logseq",
+  "name": "Logseq Linkwarden",
   "version": "0.1.0",
   "description": "Linkwarden plugin for Logseq",
   "logseq": {
     "main": "dist/index.html",
-    "id": "_706smmyun",
+    "id": "linkwarden-logseq",
     "name": "Logseq Linkwarden"
   },
   "scripts": {

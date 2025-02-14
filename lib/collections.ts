@@ -17,10 +17,16 @@ function sanitizeNameForPath(name: string) {
 async function getAllCollections() {
     try {
         const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/collections`, LINKWARDEN_GET_REQ_OPTIONS);
+
+        if (response.status === 401) {
+            logseq.UI.showMsg("Unauthorized to fetch collections from Linkwarden. Please check your API key.", "error");
+            return [];
+        }
+
         const data = await response.json();
         return data.response;
     } catch (error) {
-        logseq.UI.showMsg("Failed to fetch collections from Linkwarden.");
+        logseq.UI.showMsg("Failed to fetch collections from Linkwarden.", "error");
         return []
     }
 }
@@ -38,7 +44,7 @@ export async function getCollectionByName(name: string) {
         }
     }
 
-    logseq.UI.showMsg(`Collection ${name} not found.`);
+    logseq.UI.showMsg("Couldn't find collection named: " + name, "error");
 
     return null;
 }
@@ -77,7 +83,7 @@ export async function fetchAndStorePdfFromLink(link) {
     const response = await fetch(`${LINKWARDEN_BASE_URL}/api/v1/archives/${link.id}?format=2`, LINKWARDEN_GET_REQ_OPTIONS)
 
     if (!response.ok) {
-        logseq.UI.showMsg(`Failed to fetch PDF for ${link.name}.`)
+        logseq.UI.showMsg(`Failed to fetch PDF for ${link.name}.`, "warning")
         return null
     }
 

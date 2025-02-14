@@ -112,7 +112,6 @@ async function updateCollectionBlock(block) {
     const collection = await getCollectionByName(collectionName)
 
     if (!collection) {
-        logseq.UI.showMsg(`Collection ${collectionName} not found.`)
         return
     }
 
@@ -142,14 +141,14 @@ async function updateCollectionBlock(block) {
             }
 
             logseq.Editor.insertBlock(block.uuid,
-                `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]\ncollection:: ${collectionName}\ntags::${tagsStr}\nlinkwarden-id:: ${link.id}`)
+                `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]\ncollection:: ${collectionName}\ntags::${tagsStr}\nlinkwarden-id:: ${link.id}\nstatus:: 🟦 Pending`)
         }
 
         // Update the matching page to the link
         const linkPage = await logseq.Editor.getPage(pagePrefix + pdfInformation.nameWithoutExtension)
 
         if (linkPage === null) {
-            logseq.UI.showMsg(`Link page ${pdfInformation.nameWithoutExtension} not found.`)
+            logseq.UI.showMsg(`Link page ${pdfInformation.nameWithoutExtension} not found.`, "warning")
             continue
         }
 
