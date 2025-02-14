@@ -3,6 +3,9 @@ import { fetchAndStorePdfFromLink, getAllLinksInCollection, getCollectionByName,
 
 const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
 
+/**
+ * Search for linkwarden collection blocks and insert the children and PDFs.
+ */
 export async function updateCurrentPage() {
     const collectionBlocks = await getCollectionBlocks()
 
@@ -12,12 +15,23 @@ export async function updateCurrentPage() {
 
 }
 
+/**
+ * Get the collection name from the block content.
+ * @param content Block content. F.e. "### MyCollection #linkwarden-collection"
+ * @returns Collection name. F.e. "MyCollection"
+ */
 function getCollectionNameFromBlockContent(content: string) {
     let collectionName = content.replace(LINKWARDEN_COLLECTION_TAG, "").trim()
     collectionName = collectionName.replaceAll("#", "").trim()
     return collectionName
 }
 
+/**
+ * Get the children of a collection block. This is useful for saving the children properties
+ * before deleting them.
+ * @param block Collection block
+ * @returns Array of children blocks
+ */
 function storeCollectionBlockChildren(block: BlockEntity) {
     if (!block.children) {
         return []
@@ -37,6 +51,11 @@ function storeCollectionBlockChildren(block: BlockEntity) {
     return childrenArray
 }
 
+/**
+ * Delete all children of a block.
+ * @param block Collection block.
+ * @returns Nothing.
+ */
 function deleteBlockChildren(block: BlockEntity) {
     if (!block.children) {
         return
@@ -52,16 +71,23 @@ function deleteBlockChildren(block: BlockEntity) {
     }
 }
 
+/**
+ * This function takes new informations from linkwarden, compares them with the old state and keeps
+ * Logseq changes, like the status or year.
+ * @param pdfInformation New PDF information from linkwarden.
+ * @param oldChildrenBlocks Old children blocks from the collection block.
+ * @param pagePrefix Prefix for the page name.
+ * @returns New content for the block.
+ */
 async function updateOldBlockContent(pdfInformation: PDFInformation, oldChildrenBlocks: BlockEntity[], pagePrefix: string) {
     for (const oldBlock of oldChildrenBlocks) {
         const oldBlockContent      = oldBlock.content
         const oldBlockContentSplit = oldBlockContent.split("\n")
 
         if (oldBlockContent.indexOf("linkwarden-id:: " + pdfInformation.linkwardenId) !== -1) {
-
             oldBlockContentSplit[0] = `[[${pagePrefix}${pdfInformation.nameWithoutExtension}]]`
 
-            // Properties from linkwarden are: tags and collection, so update these
+            // Properties from linkwarden are: tags, collection and the name, so update these
             for (let i = 1; i < oldBlockContentSplit.length; i++) {
                 const line = oldBlockContentSplit[i]
 
