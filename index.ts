@@ -1,9 +1,9 @@
 import '@logseq/libs';
-import { updateCurrentPage } from './lib/page-updater';
-import { global, settingsConfig, updatePluginSettings } from './lib/settings';
-import { updateApiSettings } from './lib/linkwarden-api';
-
-const LINKWARDEN_COLLECTION_TAG = "#linkwarden-collection"
+import { PageEntity } from "@logseq/libs/dist/LSPlugin.user";
+import { PluginSettings } from './src/PluginSettings';
+import { LinkwardenApiHandler } from './src/LinkwardenApiHandler';
+import { PageHandler } from './src/PageHandler';
+import { LinkwardenLinkBlockFactory } from './src/LinkwardenLinkBlockFactory';
 
 // Functions
 // #################################################################################################
@@ -13,8 +13,6 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 export async function triggerLinkwardenUpdateAction() {
     await delay(500)
 
-    console.log('Update!')
-
     const currentPage = await logseq.Editor.getCurrentPage()
 
     if (currentPage === null) {
@@ -22,25 +20,19 @@ export async function triggerLinkwardenUpdateAction() {
         return
     }
 
-    updateCurrentPage()
+    const pageHandler = new PageHandler(currentPage as PageEntity)
+    pageHandler.updatePage()
 
     await delay(500)
 
     await logseq.Editor.exitEditingMode(false)
 }
 
-function loadSettings() {
-    logseq.useSettingsSchema(settingsConfig)
-
-    updatePluginSettings(logseq.settings)
-
-    logseq.onSettingsChanged(() => {
-        updatePluginSettings(logseq.settings)
-    })
-}
-
 function main () {
-    loadSettings()
+    // loadSettings()
+
+    PluginSettings.registerConfigurableComponent(LinkwardenApiHandler.getInstance())
+    PluginSettings.registerConfigurableComponent(LinkwardenLinkBlockFactory.getInstance())
 
     logseq.App.registerUIItem("toolbar", {
         key: "LinkwardenUpdate",
