@@ -12,6 +12,11 @@ export class LinkwardenLinkBlock {
     private _sandboxFilePath: string
     private static _storage = logseq.Assets.makeSandboxStorage()
 
+    /**
+     * Create a Logseq block under a parent block, that contains different properties
+     * of a Linkwarden link.
+     * @param linkObject The link object that should be stored in a block.
+     */
     constructor(linkObject: LinkwardenLink) {
         const linkFactory =  LinkwardenLinkBlockFactory.getInstance()
         this._linkObject     = linkObject;
@@ -30,6 +35,10 @@ export class LinkwardenLinkBlock {
         this.downloadAndStorePdf()
     }
 
+    /**
+     * Get the PDF connected to the link and store it in the sandbox storage.
+     * @returns The PDF file as blob or an error message.
+     */
     private async downloadAndStorePdf() {
         const itemExists = LinkwardenLinkBlock._storage.hasItem(this._sandboxFilePath)
 
@@ -49,7 +58,11 @@ export class LinkwardenLinkBlock {
         }
     }
 
-    private async updateAssetLinkInLinkPage() {
+    /**
+     * Update the asset link in the link page.
+     * @returns Nothing.
+     */
+    private async updateAssetLinkInLinkPage(): Promise<void> {
         const pagePrefix = await LinkwardenLinkBlockFactory.getInstance().getPagePrefix()
         const linkPage = await logseq.Editor.getPage(pagePrefix + this._linkName)
 
@@ -68,6 +81,11 @@ export class LinkwardenLinkBlock {
         }
     }
 
+    /**
+     * Append and create a new link block under a parent block.
+     * @param parent Parent block under which the new block should be created.
+     * @param oldChildBlock Old block that previously represented the link (if it exists).
+     */
     public async appendToBlock(parent: BlockEntity, oldChildBlock: BlockEntity | undefined) {
         const linkFactory = LinkwardenLinkBlockFactory.getInstance()
         const pagePrefix = await linkFactory.getPagePrefix()

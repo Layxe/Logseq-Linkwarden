@@ -7,10 +7,17 @@ export class PageHandler {
 
     private page: PageEntity;
 
+    /**
+     * Create a new page handler that updates a page with new data.
+     * @param page The page that should be updated.
+     */
     constructor(page: PageEntity) {
         this.page = page;
     }
 
+    /**
+     * Update the page with new data from the Linkwarden API.
+     */
     public async updatePage() {
         const blocks = await this.getCollectionBlocks();
 
@@ -19,6 +26,10 @@ export class PageHandler {
         }
     }
 
+    /**
+     * Get all blocks that should contain collections.
+     * @returns List of blocks that are supposed to contain collections.
+     */
     private async getCollectionBlocks() {
         const blocks = await logseq.Editor.getPageBlocksTree(this.page.uuid)
         let collectionBlocks: BlockEntity[] = []
@@ -31,6 +42,10 @@ export class PageHandler {
         return collectionBlocks
     }
 
+    /**
+     * Update a block entity with new data from the Linkwarden API.
+     * @param block Block that should be updated.
+     */
     private updateBlockEntity(block: BlockEntity) {
         const collectionBlock: LinkwardenCollectionBlock = new LinkwardenCollectionBlock(block)
         collectionBlock.updateBlock()

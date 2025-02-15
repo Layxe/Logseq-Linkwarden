@@ -1,12 +1,19 @@
 import { SettingSchemaDesc } from "@logseq/libs/dist/LSPlugin.user"
 import { ConfigurableComponent } from "./ConfigurableComponent"
 
+// Interfaces
+// #################################################################################################
+
 export interface PluginSettingsEntity {
     linkwardenHeading: null,
     linkwardenBaseUrl: string,
     linkwardenApiKey: string
     linkwardenCustomProperties: string
 }
+
+// Constants
+// #################################################################################################
+
 export const settingsConfig: SettingSchemaDesc[] = [
     {
         key: 'linkwardenHeading',
@@ -38,12 +45,18 @@ export const settingsConfig: SettingSchemaDesc[] = [
     }
 ]
 
+// Class
+// #################################################################################################
+
 export class PluginSettings {
 
     private static _instance: PluginSettings
     private _settings: PluginSettingsEntity
     private _configurableComponents: ConfigurableComponent[] = []
 
+    /**
+     * Create a new PluginSettings instance.
+     */
     private constructor() {
         logseq.useSettingsSchema(settingsConfig)
         this.updateSettings(logseq.settings)
@@ -55,6 +68,10 @@ export class PluginSettings {
         })
      }
 
+     /**
+      * Update the settings for each configurable component.
+      * @param settings New settings for the plugin.
+      */
      private updateSettings(settings: any) {
         this._settings = settings
 
@@ -71,10 +88,18 @@ export class PluginSettings {
         return this._instance
      }
 
+     /**
+      * Register a new configurable component that should be updated with new settings.
+      * @param component Configurable component that should be registered.
+      */
      public static registerConfigurableComponent(component: ConfigurableComponent) {
         this.getInstance()._configurableComponents.push(component)
      }
 
+     /**
+      * Get the current settings for the plugin.
+      * @returns The current settings for the plugin.
+      */
      public static getSettings(): PluginSettingsEntity {
         return this.getInstance()._settings
      }

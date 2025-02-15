@@ -8,11 +8,20 @@ export class LinkwardenCollectionBlock {
     private blockEntity: BlockEntity;
     private collectionName: string;
 
+    /**
+     * Create a list of links from a collection and insert them into a Logseq block.
+     * @param blockEntity The block entity that contains the collection links.
+     */
     constructor(blockEntity: BlockEntity) {
         this.blockEntity    = blockEntity;
         this.collectionName = this.getCollectionNameFromBlock(blockEntity);
     }
 
+    /**
+     * Extract the collection name from a block entity.
+     * @param blockEntity BlockEntity from which the collection name is extracted.
+     * @returns The collection name.
+     */
     private getCollectionNameFromBlock(blockEntity: BlockEntity) {
         let content = blockEntity.content;
         content = content.replace("#linkwarden-collection", "");
@@ -21,6 +30,11 @@ export class LinkwardenCollectionBlock {
         return content;
     }
 
+    /**
+     * Insert a list of links into the block.
+     * @param links Links to insert into the block.
+     * @returns
+     */
     private insertLinksInBlock(links: LinkwardenLink[]) {
         const children = this.blockEntity.children;
         if (!children) {
@@ -43,6 +57,11 @@ export class LinkwardenCollectionBlock {
         }
     }
 
+    /**
+     * Clear the block of all children, but keep the old childrens data saved.
+     * This is necessary, to keep Logseq information, like the status, intact.
+     * @returns List of old children of the block.
+     */
     private clearBlock() {
         const block = this.blockEntity;
 
@@ -73,6 +92,10 @@ export class LinkwardenCollectionBlock {
         return childrenArray
     }
 
+    /**
+     * Update the block with the links from the collection.
+     * @returns Promise that resolves, when the block is updated.
+     */
     public updateBlock() {
         return new Promise(async (resolve, reject) => {
 

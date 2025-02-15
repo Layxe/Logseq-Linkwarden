@@ -29,9 +29,11 @@ export async function triggerLinkwardenUpdateAction() {
 }
 
 function main () {
-    // loadSettings()
-
+    // Register the linkwarden api handler, so once the api key or base url changes,
+    // the handler is updated.
     PluginSettings.registerConfigurableComponent(LinkwardenApiHandler.getInstance())
+    // Register the link block factory, so once the custom properties change, the factory
+    // is updated and provides the new custom properties.
     PluginSettings.registerConfigurableComponent(LinkwardenLinkBlockFactory.getInstance())
 
     logseq.App.registerUIItem("toolbar", {

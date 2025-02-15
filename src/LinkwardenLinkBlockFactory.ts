@@ -28,6 +28,10 @@ export class LinkwardenLinkBlockFactory extends ConfigurableComponent {
         return LinkwardenLinkBlockFactory._instance;
     }
 
+    /**
+     * Get the prefix of the current page.
+     * @returns The prefix of the current page.
+     */
     public async getPagePrefix(): Promise<string> {
         return new Promise(async (resolve, reject) => {
             const currentPage = await logseq.Editor.getCurrentPage()
@@ -44,11 +48,19 @@ export class LinkwardenLinkBlockFactory extends ConfigurableComponent {
         })
     }
 
-
+    /**
+     * Get the custom properties for the link block from the logseq settings.
+     * @returns The custom properties for the link block.
+     */
     public getLinkCustomProperties(): string {
         return this._linkCustomProperties.replaceAll(";", "\n")
     }
 
+    /**
+     * Sanitize a name for the path.
+     * @param name Name that should be sanitized.
+     * @returns Sanitized name for the path.
+     */
     public sanitizeNameForPath(name: string) {
         name = name.replaceAll('/', '-')
         name = name.replaceAll('?','')
@@ -61,6 +73,11 @@ export class LinkwardenLinkBlockFactory extends ConfigurableComponent {
         return name
     }
 
+    /**
+     * Extract the properties from an old block and return them as a string.
+     * @param oldBlock Old link block from which the properties should be extracted.
+     * @returns The properties as a string, excluding the ignored properties, like linkwarden-id.
+     */
     public extractPropertiesFromOldBlock(oldBlock: BlockEntity | undefined) {
         if (oldBlock === undefined || !oldBlock.properties) {
             return ""
@@ -81,6 +98,11 @@ export class LinkwardenLinkBlockFactory extends ConfigurableComponent {
         return additionalProperties
     }
 
+    /**
+     * Convert a list of tags to a property string.
+     * @param tags List of tags that should be converted to a property string.
+     * @returns The tags as a property string with newline or empty string if no tags are present.
+     */
     public getTagsAsPropertyString(tags) {
         if (tags.length != 0) {
             let tagString = 'tags::'

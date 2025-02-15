@@ -1,6 +1,9 @@
 import { ConfigurableComponent } from "./ConfigurableComponent"
 import { PluginSettingsEntity } from "./PluginSettings";
 
+// Interfaces
+// #################################################################################################
+
 export interface LinkwardenCollection {
     id: number,
     name: string,
@@ -45,6 +48,9 @@ export interface LinkwardenLink {
     pinnedBy: number[]
 }
 
+// Class
+// #################################################################################################
+
 export class LinkwardenApiHandler extends ConfigurableComponent {
 
     private static _instance: LinkwardenApiHandler
@@ -53,6 +59,9 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
     private _postRequestOptions: RequestInit
     private _getRequestOptions: RequestInit
 
+    /**
+     * Create a new ApiHandler for Linkwarden.
+     */
     private constructor() {
         super()
 
@@ -61,6 +70,10 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         this._httpRequestHeaders.append("Authorization", "Bearer " + "")
     }
 
+    /**
+     * Get the singleton instance of the LinkwardenApiHandler.
+     * @returns The singleton instance of the LinkwardenApiHandler.
+     */
     public static getInstance(): LinkwardenApiHandler {
         if (!this._instance) {
             this._instance = new LinkwardenApiHandler()
@@ -69,6 +82,11 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         return this._instance
     }
 
+    /**
+     * Update the settings for the LinkwardenApiHandler. This includes aspects, like the
+     * base URL and the API key.
+     * @param settings Logseq Linkwarden plugin settings
+     */
     public configure(settings: PluginSettingsEntity): void {
         this._httpRequestBaseUrl = settings.linkwardenBaseUrl
         this._httpRequestHeaders.set("Authorization", "Bearer " + settings.linkwardenApiKey)
@@ -86,6 +104,11 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         }
     }
 
+    /**
+     * Get one collection from Linkwarden by its name.
+     * @param name Name of the collection.
+     * @returns The collection object or an error message.
+     */
     public getCollectionByName(name: string): Promise<LinkwardenCollection | string> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -111,6 +134,11 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         })
     }
 
+    /**
+     * Get all links in a collection.
+     * @param collection Collection for which the links should be fetched.
+     * @returns Array of links or an error message.
+     */
     public getLinksInCollection(collection: LinkwardenCollection): Promise<LinkwardenLink[] | string> {
         return new Promise(async (resolve, reject) => {
             try {
@@ -123,6 +151,11 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         })
     }
 
+    /**
+     * Get the PDF for a Linkwarden link.
+     * @param link Linkwarden link object, for which the PDF should be fetched.
+     * @returns The PDF as a Blob or an error message.
+     */
     public getPdfForLink(link: LinkwardenLink): Promise<Blob | string> {
         return new Promise(async (resolve, reject) => {
             const response = await fetch(`${this._httpRequestBaseUrl}/api/v1/archives/${link.id}?format=2`, this._getRequestOptions)
