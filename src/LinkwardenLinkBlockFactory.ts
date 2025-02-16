@@ -7,7 +7,7 @@ import { PluginSettingsEntity } from "./PluginSettings";
  * This means, these values are always updated, when a block is recreated.
  */
 const IGNORED_PROPERTIES = [
-    'linkwarden-id',
+    'linkwardenid',
     'tags',
     'collection'
 ]

@@ -46,7 +46,7 @@ export class LinkwardenCollectionBlock {
 
         for (const child of oldChildrenData) {
             if (child.properties) {
-                oldChildrenMap.set(child.properties['linkwarden-id'], child);
+                oldChildrenMap.set(child.properties['linkwardenid'], child);
             }
         }
 

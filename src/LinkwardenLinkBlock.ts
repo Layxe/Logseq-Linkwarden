@@ -93,7 +93,7 @@ export class LinkwardenLinkBlock {
         let additionalProperties = linkFactory.extractPropertiesFromOldBlock(oldChildBlock)
 
         let blockContent = `[[${pagePrefix}${this._linkName}]]\n`
-        blockContent += `linkwarden-id:: ${this._linkObject.id}\n`
+        blockContent += `linkwardenid:: ${this._linkObject.id}\n`
         blockContent += `collection:: ${this._collectionName}\n`
         blockContent += linkFactory.getTagsAsPropertyString(this._linkObject.tags)
         blockContent += additionalProperties
