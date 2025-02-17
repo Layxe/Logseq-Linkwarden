@@ -1,6 +1,6 @@
 # Logseq Linkwarden Plugin
 
-**Import links from Linkwarden into Logseq as rendered PDF. Keep track of your reading status and annotate important information.**
+**Import links from your Linkwarden collection into Logseq as PDF. Keep track of your reading status and annotate important information.**
 
 ![Logseq Linkwarden Introduction Video](./docs/LogseqLinkwarden.gif)
 

@@ -1,7 +1,7 @@
 {
   "name": "Logseq Linkwarden",
   "version": "0.1.0",
-  "description": "Linkwarden plugin for Logseq",
+  "description": "Import links from your Linkwarden collection into Logseq as PDF. Keep track of your reading status and annotate important information.",
   "logseq": {
     "main": "dist/index.html",
     "id": "linkwarden-logseq",
