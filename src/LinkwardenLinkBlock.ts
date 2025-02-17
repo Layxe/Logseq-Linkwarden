@@ -40,7 +40,9 @@ export class LinkwardenLinkBlock {
      * @returns The PDF file as blob or an error message.
      */
     private async downloadAndStorePdf() {
-        const itemExists = LinkwardenLinkBlock._storage.hasItem(this._sandboxFilePath)
+        const itemExists = await LinkwardenLinkBlock._storage.hasItem(this._sandboxFilePath)
+
+        console.log(itemExists)
 
         if (!itemExists) {
             const pdfBlob = await LinkwardenApiHandler.getInstance().getPdfForLink(this._linkObject)
