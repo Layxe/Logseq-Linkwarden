@@ -10,6 +10,8 @@ Setup your connection to the Linkwarden API. You need to generate an Access Toke
 Paste the base of the URL into Linkwarden Base URL. F.e. when running on localhost:3000, paste `http://localhost:3000` into the field.
 Afterwards paste the Access Token/API Key into the Linkwarden API Key field.
 
+To import links from Linkwarden, create a new block in Logseq, type in the collection name and add the tag `#linkwarden-collection`. If you click the button from the toolbar, the plugin will import all links from the collection. Header symbols f.e. `### <collection name> #linkwarden-collection` are also supported.
+
 ## Configuration
 
 You can generate custom properties for every link. The properties are stored in the plugin
