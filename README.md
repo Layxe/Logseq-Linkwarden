@@ -1,5 +1,9 @@
 # Logseq Linkwarden Plugin
 
+**Import links from Linkwarden into Logseq as rendered PDF. Keep track of your reading status and annotate important information.**
+
+![Logseq Linkwarden Introduction Video](./docs/LogseqLinkwarden.gif)
+
 ## Getting Started
 
 Setup your connection to the Linkwarden API. You need to generate an Access Token/API Key from the Linkwarden instance.
