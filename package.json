@@ -2,11 +2,11 @@
   "name": "logseq-linkwarden",
   "version": "1.0.3",
   "description": "Import links from your Linkwarden collection into Logseq as PDF. Keep track of your reading status and annotate important information.",
-  "main": "dist/index.html",
   "logseq": {
     "id": "logseq-linkwarden",
     "name": "Logseq Linkwarden",
-    "icon": "icon.svg"
+    "icon": "icon.svg",
+    "main": "dist/index.html"
   },
   "scripts": {
     "build": "parcel build --public-url . --no-source-maps index.html"
