@@ -4,7 +4,7 @@ import { PluginSettings } from './src/PluginSettings';
 import { LinkwardenApiHandler } from './src/LinkwardenApiHandler';
 import { PageHandler } from './src/PageHandler';
 import { LinkwardenLinkBlockFactory } from './src/LinkwardenLinkBlockFactory';
-import { LinkwardenLinkStatusHandler } from './src/LinkwardenLinkStatusHeader';
+import { LinkwardenLinkStatusHandler } from './src/LinkwardenLinkStatusHandler';
 
 // Functions
 // #################################################################################################
