@@ -1,10 +1,10 @@
 {
   "name": "logseq-linkwarden",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Import links from your Linkwarden collection into Logseq as PDF. Keep track of your reading status and annotate important information.",
   "logseq": {
     "main": "dist/index.html",
-    "id": "linkwarden-logseq",
+    "id": "logseq-linkwarden",
     "name": "Logseq Linkwarden",
     "icon": "icon.svg"
   },
