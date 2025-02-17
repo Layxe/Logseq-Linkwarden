@@ -1,5 +1,5 @@
 {
-  "name": "Logseq Linkwarden",
+  "name": "logseq-linkwarden",
   "version": "1.0.0",
   "description": "Import links from your Linkwarden collection into Logseq as PDF. Keep track of your reading status and annotate important information.",
   "logseq": {
