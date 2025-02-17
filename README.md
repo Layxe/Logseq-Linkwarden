@@ -25,3 +25,5 @@ Additionally you can also change the possible states. The default states are:
     🟦 Pending;🟥 Trashed;🟨 First Pass;🟩 Read;🟧 Archived
 
 Feel free, to adapt them to your needs.
+
+**Disclaimer: This project is not affiliated with Linkwarden. It is a personal project and not officially supported by Linkwarden.**
