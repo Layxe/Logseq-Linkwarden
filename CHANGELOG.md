@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.0.1...v1.0.2) (2025-02-17)
+
+
+### Bug Fixes
+
+* Adapting plugin id ([fe3116f](https://github.com/Layxe/Logseq-Linkwarden/commit/fe3116fdb5d16c985f6f145789935c3a8b72221a))
+
 ## [1.0.1](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.0.0...v1.0.1) (2025-02-17)
 
 
