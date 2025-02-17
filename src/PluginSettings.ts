@@ -50,14 +50,16 @@ export const settingsConfig: SettingSchemaDesc[] = [
         title: 'Enable Custom Link Status',
         type: 'boolean',
         default: true,
-        description: 'Load the extension for easier handling of the link status. If you disable this, you need to restart Logseq.'
+        description: 'Load the extension for easier handling of the link status. If you disable \
+ this, you need to restart Logseq.'
     },
     {
         key: 'linkwardenStatusOptions',
         title: 'Link Status Options',
         type: 'string',
         default: '🟦 Pending;🟥 Trashed;🟨 First Pass;🟩 Read;🟧 Archived',
-        description: 'Options for the link status. Separated by a semicolon. If you remove or change an option, you need to restart Logseq.'
+        description: 'Options for the link status. Separated by a semicolon. If you remove or \
+ change an option, you need to restart Logseq.'
     }
 ]
 

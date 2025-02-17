@@ -112,10 +112,14 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
     public getCollectionByName(name: string): Promise<LinkwardenCollection | string> {
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await fetch(`${this._httpRequestBaseUrl}/api/v1/collections`, this._getRequestOptions)
+                const response = await fetch(
+                    `${this._httpRequestBaseUrl}/api/v1/collections`, this._getRequestOptions
+                )
 
                 if (response.status === 401) {
-                    reject("Unauthorized to fetch collections from Linkwarden. Please check your API key.")
+                    let errorMessage = "Unauthorized to fetch collections from Linkwarden. "
+                    errorMessage += "Please check your API key."
+                    reject(errorMessage)
                 }
 
                 const data = await response.json()
@@ -139,10 +143,15 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
      * @param collection Collection for which the links should be fetched.
      * @returns Array of links or an error message.
      */
-    public getLinksInCollection(collection: LinkwardenCollection): Promise<LinkwardenLink[] | string> {
+    public getLinksInCollection(collection: LinkwardenCollection):
+        Promise<LinkwardenLink[] | string> {
+
         return new Promise(async (resolve, reject) => {
             try {
-                const response = await fetch(`${this._httpRequestBaseUrl}/api/v1/links/?collectionId=${collection.id}`, this._getRequestOptions)
+                const response = await fetch(
+                    `${this._httpRequestBaseUrl}/api/v1/links/?collectionId=${collection.id}`,
+                    this._getRequestOptions
+                )
                 const object = await response.json()
                 resolve(object.response)
             } catch (error) {
@@ -158,7 +167,10 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
      */
     public getPdfForLink(link: LinkwardenLink): Promise<Blob | string> {
         return new Promise(async (resolve, reject) => {
-            const response = await fetch(`${this._httpRequestBaseUrl}/api/v1/archives/${link.id}?format=2`, this._getRequestOptions)
+            const response = await fetch(
+                `${this._httpRequestBaseUrl}/api/v1/archives/${link.id}?format=2`,
+                this._getRequestOptions
+            )
 
             if (!response.ok) {
                 reject("Failed to fetch PDF for link: " + link.name)

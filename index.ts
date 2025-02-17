@@ -12,7 +12,7 @@ import { LinkwardenLinkStatusHandler } from './src/LinkwardenLinkStatusHandler';
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 export async function triggerLinkwardenUpdateAction() {
-    await delay(500)
+    await delay(500) // Wait 500 ms before starting the update, so changes are being persisted.
 
     const currentPage = await logseq.Editor.getCurrentPage()
 
@@ -26,7 +26,10 @@ export async function triggerLinkwardenUpdateAction() {
 
     await delay(500)
 
-    await logseq.Editor.exitEditingMode(false)
+    // Repeat three times to make sure the exit really happens.
+    for (let i = 0; i < 3; i++) {
+        await logseq.Editor.exitEditingMode(false)
+    }
 }
 
 function main () {
