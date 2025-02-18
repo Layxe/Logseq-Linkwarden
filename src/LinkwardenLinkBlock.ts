@@ -10,6 +10,7 @@ export class LinkwardenLinkBlock {
     private _linkNameWithExtension: string
     private _assetFilePath: string
     private _sandboxFilePath: string
+    private _pdfStored = false;
     private static _storage = logseq.Assets.makeSandboxStorage()
 
     /**
@@ -31,8 +32,6 @@ export class LinkwardenLinkBlock {
         this._linkNameWithExtension = name
         this._assetFilePath         = `../assets/storages/${logseq.baseInfo.id}/${this._collectionName}/${this._linkNameWithExtension}`
         this._sandboxFilePath       = `${this._collectionName}/${this._linkNameWithExtension}`
-
-        this.downloadAndStorePdf()
     }
 
     /**
@@ -42,21 +41,25 @@ export class LinkwardenLinkBlock {
     private async downloadAndStorePdf() {
         const itemExists = await LinkwardenLinkBlock._storage.hasItem(this._sandboxFilePath)
 
-        console.log(itemExists)
-
         if (!itemExists) {
-            const pdfBlob = await LinkwardenApiHandler.getInstance().getPdfForLink(this._linkObject)
+            try {
+                const pdfBlob = await LinkwardenApiHandler.getInstance().getPdfForLink(this._linkObject)
 
-            if (typeof pdfBlob === 'string') {
-                logseq.UI.showMsg(pdfBlob, "warning")
-                return
-            }
+                if (typeof pdfBlob === 'string') {
+                    logseq.UI.showMsg(pdfBlob, "warning", {timeout: 4000})
+                    return false
+                }
 
-            const fileReader = new FileReader()
-            fileReader.onload = async () => {
-                LinkwardenLinkBlock._storage.setItem(this._sandboxFilePath, fileReader.result as string)
+                const fileReader = new FileReader()
+                fileReader.onload = () => {
+                    LinkwardenLinkBlock._storage.setItem(this._sandboxFilePath, fileReader.result as string)
+                }
+                fileReader.readAsArrayBuffer(pdfBlob)
+                return true
+            } catch (_error) {
+                logseq.UI.showMsg("Couldn't download PDF for " + this._linkName, "warning", {timeout: 4000})
+                return false
             }
-            fileReader.readAsArrayBuffer(pdfBlob)
         }
     }
 
@@ -89,10 +92,10 @@ export class LinkwardenLinkBlock {
      * @param oldChildBlock Old block that previously represented the link (if it exists).
      */
     public async appendToBlock(parent: BlockEntity, oldChildBlock: BlockEntity | undefined) {
-        const linkFactory = LinkwardenLinkBlockFactory.getInstance()
-        const pagePrefix = await linkFactory.getPagePrefix()
-
-        let additionalProperties = linkFactory.extractPropertiesFromOldBlock(oldChildBlock)
+        const linkFactory          = LinkwardenLinkBlockFactory.getInstance()
+        const pagePrefix           = await linkFactory.getPagePrefix()
+        const hasDownloadedPDF     = await this.downloadAndStorePdf()
+        const additionalProperties = linkFactory.extractPropertiesFromOldBlock(oldChildBlock)
 
         let blockContent = `[[${pagePrefix}${this._linkName}]]\n`
         blockContent += `linkwardenid:: ${this._linkObject.id}\n`
@@ -106,7 +109,9 @@ export class LinkwardenLinkBlock {
 
         logseq.Editor.insertBlock(parent.uuid, blockContent)
 
-        this.updateAssetLinkInLinkPage()
+        if (hasDownloadedPDF) {
+            this.updateAssetLinkInLinkPage()
+        }
     }
 
 }
