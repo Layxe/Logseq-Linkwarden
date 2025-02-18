@@ -167,18 +167,22 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
      */
     public getPdfForLink(link: LinkwardenLink): Promise<Blob | string> {
         return new Promise(async (resolve, reject) => {
-            const response = await fetch(
-                `${this._httpRequestBaseUrl}/api/v1/archives/${link.id}?format=2`,
-                this._getRequestOptions
-            )
+            try {
+                const response = await fetch(
+                    `${this._httpRequestBaseUrl}/api/v1/archives/${link.id}?format=2`,
+                    this._getRequestOptions
+                )
 
-            if (!response.ok) {
+                if (!response.ok) {
+                    reject("Failed to fetch PDF for link: " + link.name)
+                    return
+                }
+
+                const blob = await response.blob()
+                resolve(blob)
+            } catch (_error) {
                 reject("Failed to fetch PDF for link: " + link.name)
-                return
             }
-
-            const blob = await response.blob()
-            resolve(blob)
         })
     }
 }
