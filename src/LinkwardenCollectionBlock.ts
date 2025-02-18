@@ -101,7 +101,7 @@ export class LinkwardenCollectionBlock {
      * @returns Promise that resolves, when the block is updated.
      */
     public updateBlock() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise<string>(async (resolve, reject) => {
 
             const apiHandler = LinkwardenApiHandler.getInstance();
             try {
@@ -121,7 +121,7 @@ export class LinkwardenCollectionBlock {
 
                 this.insertLinksInBlock(links);
 
-                resolve(null)
+                resolve("Success!")
             } catch (error) {
                 reject(error);
             }

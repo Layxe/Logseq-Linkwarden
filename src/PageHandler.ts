@@ -32,7 +32,7 @@ export class PageHandler {
      */
     private async getCollectionBlocks() {
         const blocks = await logseq.Editor.getPageBlocksTree(this.page.uuid)
-        let collectionBlocks: BlockEntity[] = []
+        const collectionBlocks: BlockEntity[] = []
         for (const block of blocks) {
             if (block.content.includes(LINKWARDEN_COLLECTION_TAG)) {
                 collectionBlocks.push(block)
@@ -48,7 +48,11 @@ export class PageHandler {
      */
     private updateBlockEntity(block: BlockEntity) {
         const collectionBlock: LinkwardenCollectionBlock = new LinkwardenCollectionBlock(block)
-        collectionBlock.updateBlock()
+        collectionBlock.updateBlock().catch(msg => {
+            if (typeof msg === 'string') {
+                logseq.UI.showMsg(msg, "error", {timeout: 4000})
+            }
+        })
     }
 
 }
