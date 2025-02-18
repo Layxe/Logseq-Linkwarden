@@ -1,3 +1,16 @@
+# [1.1.0](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.0.3...v1.1.0) (2025-02-18)
+
+
+### Bug Fixes
+
+* error when no link name was given ([7172859](https://github.com/Layxe/Logseq-Linkwarden/commit/71728595d3175a214fd4fdc726d7cba08624bd8b))
+* not creating link when pdf couldnt download ([ba60239](https://github.com/Layxe/Logseq-Linkwarden/commit/ba60239f7b3069be0c96ea9254d2ba08bd6d7140))
+
+
+### Features
+
+* error messages for missing collection ([b9d8e2e](https://github.com/Layxe/Logseq-Linkwarden/commit/b9d8e2efd8bbd2990632014211499745c6657c35))
+
 ## [1.0.3](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.0.2...v1.0.3) (2025-02-17)
 
 
