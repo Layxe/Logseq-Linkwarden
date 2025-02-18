@@ -42,8 +42,6 @@ export class LinkwardenLinkBlock {
     private async downloadAndStorePdf() {
         const itemExists = await LinkwardenLinkBlock._storage.hasItem(this._sandboxFilePath)
 
-        console.log(itemExists)
-
         if (!itemExists) {
             const pdfBlob = await LinkwardenApiHandler.getInstance().getPdfForLink(this._linkObject)
 
@@ -53,7 +51,7 @@ export class LinkwardenLinkBlock {
             }
 
             const fileReader = new FileReader()
-            fileReader.onload = async () => {
+            fileReader.onload = () => {
                 LinkwardenLinkBlock._storage.setItem(this._sandboxFilePath, fileReader.result as string)
             }
             fileReader.readAsArrayBuffer(pdfBlob)

@@ -51,9 +51,13 @@ export class LinkwardenCollectionBlock {
         }
 
         for (const link of links) {
-            const linkBlock = new LinkwardenLinkBlock(link);
-            const oldChild = oldChildrenMap.get(link.id);
-            linkBlock.appendToBlock(this.blockEntity, oldChild);
+            if (link.name.length > 0) {
+                const linkBlock = new LinkwardenLinkBlock(link);
+                const oldChild = oldChildrenMap.get(link.id);
+                linkBlock.appendToBlock(this.blockEntity, oldChild);
+            } else {
+                logseq.UI.showMsg(`Skipping ${link.url} since no name was given.`, "warning", {timeout: 2000})
+            }
         }
     }
 
