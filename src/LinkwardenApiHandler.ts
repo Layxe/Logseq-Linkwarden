@@ -94,13 +94,15 @@ export class LinkwardenApiHandler extends ConfigurableComponent {
         this._getRequestOptions = {
             method: "GET",
             headers: this._httpRequestHeaders,
-            redirect: "follow"
+            redirect: "follow",
+            mode: 'no-cors'
         }
 
         this._postRequestOptions = {
             method: "POST",
             headers: this._httpRequestHeaders,
-            redirect: "follow"
+            redirect: "follow",
+            mode: 'no-cors'
         }
     }
 
