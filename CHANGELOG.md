@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.0...v1.1.1) (2025-03-04)
+
+
+### Bug Fixes
+
+* Enabling CORS in fetch for self-hosted deployments ([05e1f3c](https://github.com/Layxe/Logseq-Linkwarden/commit/05e1f3cc526f3410495c79c28d57b66849883e5f))
+
 # [1.1.0](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.0.3...v1.1.0) (2025-02-18)
 
 
