@@ -21,7 +21,7 @@ module.exports = {
                 prepareCmd:
                     'zip -r ' +
                     pluginName +
-                    '-${nextRelease.version}.zip package.json LICENSE.txt README.md CHANGELOG.md dist/',
+                    '-${nextRelease.version}.zip icon.svg package.json LICENSE.txt README.md CHANGELOG.md dist/',
             },
         ],
         [
