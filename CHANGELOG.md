@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.1...v1.1.2) (2025-04-29)
+
+
+### Bug Fixes
+
+* adding icon.svg into release ([acdad43](https://github.com/Layxe/Logseq-Linkwarden/commit/acdad433b5a3047c152e65ca0ec7069baa62c2d7))
+
 ## [1.1.1](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.0...v1.1.1) (2025-03-04)
 
 
