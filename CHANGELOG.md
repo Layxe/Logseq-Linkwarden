@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.2...v1.1.3) (2025-04-29)
+
+
+### Bug Fixes
+
+* authentication not being transmitted ([3be3981](https://github.com/Layxe/Logseq-Linkwarden/commit/3be398164d59370983a0fab2bd67fc6fc0317d1f))
+
 ## [1.1.2](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.1...v1.1.2) (2025-04-29)
 
 
