@@ -1,3 +1,16 @@
+# [1.2.0](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.3...v1.2.0) (2026-03-29)
+
+
+### Bug Fixes
+
+* pnpm mismatch ([6d8b883](https://github.com/Layxe/Logseq-Linkwarden/commit/6d8b883e37331fd53a03a35b502b558432ab368f))
+* reinstalling pnpm packages ([6653dd8](https://github.com/Layxe/Logseq-Linkwarden/commit/6653dd8e076dbea1708ab54300fb630178e95bde))
+
+
+### Features
+
+* updating package versions ([48593bd](https://github.com/Layxe/Logseq-Linkwarden/commit/48593bd456911b6b29152c15a2432c8117323962))
+
 ## [1.1.3](https://github.com/Layxe/Logseq-Linkwarden/compare/v1.1.2...v1.1.3) (2025-04-29)
 
 
